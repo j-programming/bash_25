@@ -1,0 +1,402 @@
+which ls - ktore ls jest wykonywane (z PATH)
+whereis ls - gdzie sa wszystkie ls
+
+help CMD lub man lub info
+
+# komentarz
+
+; koniec polecenia - wszytskie polecenia sie wykonaja, bez wzgledu na rezultat poprzednida
+
+: pusta instrukcja (zawsze zwraca wartosc True)
+	np while : ; do echo plik ; done
+
+. ./filename - wykonuje polecenie w biezacej powloce (bashu)
+	- zachowuje zmienne zewnetrzne (dodaje)
+	- nie potrzeba chmod +x (kropka dziala jak include)
+deskryptory plikowe
+	-0 - strumien wejsciowy
+	-1 - wyjsciowy
+	-2 err
+
+przekierowania wyjscia
+	-ls -al 1>ls.log - przekieruj wyjscie do log -skasuje plik
+	-ls -al > ls.log - przekieruj calosc do log
+	-echo dopisuj >> l.log - do dopisywania
+	-ping -c 1 google.com > >( cat) - tak tez mozna przekierowac wyjscie
+				^inny operator. bardziej czytelne > >( tail -1)
+
+... > ping.log 2>&1 - &1 oznacza ping.log
+... 2> /dev/null > ping.log  - oczysc wynik z bledow
+
+przekierowanie wejscia:
+more 0<ping.log
+more < ping.log (0 domyslne)
+more <(ping google.com) - PRZYDATNE <(CMD) przekierowanie dekr.wyjsc - mozna uzywac kilku
+
+kopiowanie deskryptorow
+	Po lewej docelowy, po prawej zrodlo
+	n<&x lub n>&x kopiuje dek=sk x do n
+	KOLEJNOSC MA ZNACZENIE
+	&> lub >& == > plik 2>&1
+
+zamkniecie deskryptora numer n
+	n>&- lub n<&-
+przeniesienie i zamkniecie zrodlowego:
+	n<&x- lub n>&x- kopiuje x do n i zamyka x
+
+otwarcie pliku do zapisu i odczytu:
+	n<> plik
+	gdy nie ma n, uzywane jest dom 0
+	istniejacy plik nie jest przycinany
+
+POTOKI:
+	operator |
+	laczy wyjscie pierw. procesu z wejscie 2 procesu
+	oba procesy dzialaja rownoczesnie
+	np:
+		$ls | grep wzorzec
+		$du -csh | sort -h
+
+Uruchomienie procesu w tle
+	-& na koncu polecenia
+	echo $! - PID ostatnio uruchomionego polecenia
+	sprawdzenie PID: top, ps, (jobs)
+	zakonczenie: kill %1 (kill %job_id)
+	fg przywrocenie na pierwszy plan
+	ctrl+z - stop
+
+			ZMIENNE
+-tworzone przy pierwszym uzyciu
+- niszczone przez 'unset'
+	zmienna="wartosc"
+	echo $zmienna
+	echo "$zmienna" - wypisze zmienna
+	echo '$zmienna - wypisze zmienna
+	echo /$zmienna --> na wyjsciu $zmienna
+	read zmienna - zapisuje z wejscia do zmiennej
+	echo $(zmienna) - zalecany sposob
+
+export zmienna -> exportuje zmienna do uzytku przez inne zadania (z tej samej powloki?)
+
+zmienne systemowe.. 
+	$HOME
+	$PATH
+	$0 - nazwa skryptu powloki
+	$$ - PID biezacego procesu powloki
+	$# liczba przekazanych parametrow
+
+zmienne paramteryczne - paramatry przekazane do pliku
+	tylko odczyt wartosci
+	$1, $2, $3 itd
+	$*, $@ - lista wszystkich parametrow
+	$@= "$1""$2" - obejmuje parametr ""
+	
+
+cwiczenia z ifs	i zmiennymi
+
+instrukcja shift - przesuwa zmienne parametryczne o podana ilosc pozycji w dol
+	$# $* $@ sa rowniez zmieniane
+
+	echo "$#; $1"  liczba, param
+	shift
+	echo "$# ; $1"	liczba-1 param+1
+	./shift.sh ala ma kota
+
+polecenie set:
+	ustawia zmienne parametryczne dla biezacej powloki
+	set $(date +%A)
+	echo $1
+
+rozwiniecia parametryczne
+	zm="ala ma kota"
+	echo ${zm:4:2} --> 'ma'
+
+	echo ${zm /ma nie ma} -> zamienia?
+
+	${param:-domyslna} - jesli param==null zwraca wart. dom, ale nie przypisuje
+	${#param} - dlugosc paramteru w znakach
+	${param%slowo} - usuwa od konca najmniejsza czesc pasujaca do slowo
+	${param%%slowo} - usuwa najdluzsze od konca dopasowanie
+	... cd usuwania
+
+* oznacza jeden lub wiecej znakow
+	
+	zmienna=/dzo/fwe/efw/fwe/de
+	echo ${zmienna%fwe*} - usunie fwe/de
+
+	echo ${zmienna%%fwe*}	usunie fwe/ewf/fwe/de
+	echo ${zmienna##fwe*}
+	
+	para.sh - wyluskanie nazwy pliku/ sciezki
+
+				TABLICE
+	indeksowana/asocjacyjna
+	nie ma ograniczen rozmiaru
+	indeks od 0
+
+	INDEksowana:
+	tablica= (pierwszy drugi trzeci)
+	
+	aso:
+	declare -A tablica_a=([pierwszy]=a [drugi]=b [trzeci]=c)
+
+	echo ${#tablica[*]} - ilosc elemntow w tablicy
+
+	echo ${tablica[0]} - pobranie elementu
+	echo ${tablica_a[drugi]} - aso
+	
+	wszystkie elementy tablicy:
+	echo ${tablica [@]} ${tablica[*]}
+
+	lista kluczy tablicy asocjacyjnej:
+	echo ${!tablica_a[*]} ${tablica_a[@]}
+	
+	dlugosc e. trzeciego:
+	echo ${#tablica[3]}
+
+	nadpisanie lub dodanie elementow:
+	tablica[3]=czwarty
+	tablica_a[drugi]=3
+	
+	usuniecie wartosci el. drugiego - liczba el sie zmniejszy, ale indeksy sie nie zmienia
+	unset tablica[1]
+
+	usuniecie tablicy:
+	unset tablica
+ 	unset tablica[*]
+
+	array.sh - wypisywanie el. tablicy, iterujac po indeksach
+	
+	array_asoc.sh - wypisywanie tablicy asocjacyjnej, z usunieciem elementu
+	
+			INSTRUKCJE WARUNKOWE
+
+	IF:
+	
+	if warunek
+	then
+		instr
+	else
+		instr
+	fi
+	
+	if true
+	then
+		echo prawda
+	fi
+
+	if !false   # ! neguje
+	then
+		echo prawda
+
+	IF + ELIF
+
+	if warunek
+	then
+		inst
+	elif warunek
+	then
+		instr
+	else
+		instr
+	fi
+
+	instrukcje if mozna zagniezdzac
+
+	CASE
+
+	obsluguje takie same symbole wieloznaczne jak ls przy wyszukiwaniu plikow
+	
+#wtf wzorzec
+	case zmienna in
+	wzorzec ([wzorzec)
+	instr ;;
+	wzorzec ([ wz] )
+	instr ;;
+	esac
+
+	np:
+	echo PADA deszcz?
+	read odp
+	case "$odp" in
+	tak)
+		echo ":/";;
+
+	*)
+		echo nie rozumiem
+
+	"tak"|'t"|"TAK") - przykladowy case
+	n*|N*
+	*)
+	[tT]|[tT][aA][kK] - cala klasa znakow, np TaK
+	
+		SELECT
+	-proste menu
+
+	select zmienna in lista
+	do
+		polecenie
+	done
+	
+	echo pada deszcz?
+	select odp in Tak Nie
+	do
+		exho $odp
+	done
+
+	np:
+
+	PS3="wybierz opcje:"
+	echo ktory dzien?
+	opcje="Pon Wt St Cz Pt"
+	select odp in opcje
+	do
+		echo $odp
+	done
+
+		TEST
+	-testowanie roznych warunkow
+	- umieszczenie [] zwieksza przejrzystosc
+	
+	test z plikami:
+	-f true gdy zwykly plik
+	-e true if exist
+	-d true if dir
+	-s true if exist  rozm>0
+	-x execute
+	
+	test i operacje arytm:
+	wyrU -eq wyrT - rowne
+	wyrU -ne wyrT nie
+	...
+
+	komenda [[ wyrazenie ]]
+	- nowsza wersja test lub [wyrazenie] ale niezgodna z POSIX
+	- zwraca 0 lub 1
+	- obsluguje wyr regularne
+	
+	automatycznie rozwijane sa stale zapisane w innych systemach liczb
+	np:
+	dec=15
+	hex=0x0f
+	
+	if [["$dec" -eq "$hex"]]
+	then
+		echo rowne
+	else
+		echo rozne
+	fi
+
+	
+		STRUKTURY STERUJACE
+
+	FOR
+	for zmienna in lista_ciagow
+	do
+		instr
+	done
+
+	postac z rozwinieciem wyrazen arytm
+	for (( expr1; expr2; expr3  )) #expr1 - przed 1 petla, expr2 - w trakcie?
+	do
+		instr
+	done
+	
+	echo {a..z} ==a,b,..y,z
+
+	for ((i=0; i<10; i++))
+	do
+		instr
+	done
+	
+	WHILE
+
+	counter=1
+	while ["$counter" -lt 5]
+	do
+		echo $counter
+		let counter++
+	done
+	echo $counter
+
+	#lub
+	ls -l | while read f #while jako pod-powloka
+	do
+	echo Plik $f
+	done
+
+	UNTIL
+	until warunek
+	do
+		instr
+	done
+	counter=1
+	
+	until ["$counter" -gt 5]
+	...
+	
+	break -wyjscie z petli
+	continue - przerwij to wykonanie i przejdz do nastepnego
+	
+	&& - and- if [] && []; then if [[ && ]]; then
+	|| - or - -==--
+
+	BLOKI INSTRUKCJI
+	{...} - w biezacej powloce
+	[...] - w nowej powloce
+	
+	if [-f plik] && {grep -Hn "a" plik; echo druga} #drugie wyr zawsze prawdziwe
+	then
+		echo Znalazlem \"a\"?
+	fi
+	
+				FUNKCJE
+	-wykonuja sie szybciej
+	-trzeba je najpierw zdefiniowac
+	-latwiej przekazac rezultaty
+	
+
+	func() {
+	 echo "Wykonalo sie"
+	}
+	echo Start
+	func
+	echo Koniec
+	
+	#tutaj funkcja z case
+	while func
+	do
+		echo jeszcze raz
+	done
+
+	#funkcja z parametrami func_para.sh
+
+	zmienne lokalne w funkcji
+	func(){
+	local lokalna=
+	
+	func(){
+	read wej
+	echo $wej
+	}
+
+			DOKUMENTY MIEJSCOWE
+	zaczyna sie od <<, po ktorym nastepuje unikalna sekwencja, ktora musi zostac powtorzona na koncu pliku
+	
+	cat << _EOF_
+	Dokument miejscowy
+	_EOF_
+
+	test2.sh - dla -h- opcje, itd - dokonczyc
+
+		SEKWENCJE SPECJALNE
+
+	\\ - odwrocony ukosnik
+	\" - cudzyslow
+	\n - nowa linia
+	\t - tabulator
+	
+	printf
+	printf format paramtery
+	np
+	printf "%s\n%s\n" ciag1 ciag2

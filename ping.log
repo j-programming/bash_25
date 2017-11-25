@@ -1,0 +1,6 @@
+PING google.com (172.217.17.46) 56(84) bytes of data.
+64 bytes from ams16s29-in-f14.1e100.net (172.217.17.46): icmp_seq=1 ttl=52 time=196 ms
+
+--- google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 196.554/196.554/196.554/0.000 ms
