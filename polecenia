@@ -477,5 +477,26 @@ rozwiniecia parametryczne
 
 	assert.sh - prosta asercja z debugiem do pliku
 	
+
+
+		ROZWINIECIA ARYTMETYCZNE
+
+	-czyli wykonywanie dzialan arytm
+	-tylko liczby calkowite
+	
+			WYKLAD/SLAJDY
+
+	expr1?expr2:expr3 <--- skrot if . jesli expr1 to expr2 jesli nie to expr3
+	
+	
+
+	PROSTE WCORCE
+	cw1
+	a - echo */
+	b - echo cr*
+	c - echo *[ab]*/ 
+	d - echo *[ab]*[ab]*/ - nie bo aa bb
+	d - echo *a*b*/ *b*a*/
+
 	
 	
