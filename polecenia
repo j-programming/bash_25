@@ -400,3 +400,82 @@ rozwiniecia parametryczne
 	printf format paramtery
 	np
 	printf "%s\n%s\n" ciag1 ciag2
+
+	exec - zastepuje biezaca powloke innym poleceniem
+	exec ls -l
+	przydatne do przekierowan wyjsc
+	exec 1>log
+
+	exit n -konczy skrypt z kodem n
+
+	eval - wykonuje dodatkowe rozwiniecia parametrow
+	umozliwia pisanie dynamicznego kodu
+	x=foo ; y=\$$x; echo $y;
+	>$foo	
+	foo=10; x=foo; eval y=\$$x; echo $y
+	>10
+	
+	sleep - pauza na okreslona liczbe sekund
+	time sleep 1m
+	
+	STOS katalogow
+	pushd 
+	popd - zdejmij i wejdz do katalogu
+	dirs - lista katalogow na stosie
+	
+	TRAP
+	debugowanie
+	
+
+
+	DEBUGOWANIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+
+	(numer lini nie zawsze odpowaiada miejscu wystapienia bledu)
+	(przyklad) line_err.sh
+
+	debug_printf.sh - ciekawy kod, wyrzuca trace bledu
+
+	polecenie set i opcje
+	set -n - szuka tylko bledow skladni
+	set -v - sprawdza przed wykonaniem (?)
+	set -x - sprawdza po przypisaniu zmiennych
+	set -u - err gdy undefined
+	set -e - zakoncz skrypt gdy polecenie zwroci niezerowy kod wyjscia
+
+	polecenie trap
+	po dodaniu do skryptu wyrzuca podany komunikat.
+	EXIT - pulapka wykonywana w momencie konczenia pracy skryptu
+	np. trap 'echo kryt. wartosc = $zmienna' EXIT
+	
+	RETURN - gdy funkcja lub zalaczony skrypt zakonczy dzialanie
+	np . config.sh
+
+	set -0 functrace  - powoduje dziedziczenie pulapek RETURN oraz DEBUG przez funkcje i polecenia w podpowlokach
+	
+	DEBUG
+	pulapka wykonywana przed wykoaniem kolejnej instrukcji
+	trap 'echo $LINENO ${FUNCNAME[0]}' DEBUG
+
+	ERR
+	wykonywana gdy kod wyjscia jest rozny od 0 (z bledem). Nie wykonywane gdy polecenie uzyte w instr. war.
+	
+	set -0 errtrace  - wlacza dziedziczenie pulapki err przez funkcji i podpowloki
+	
+	POLECENIE tee
+	czyta wejscie i przesyla na wyjscie zapisujac tez dane do pliku
+	np ls | sort | tee log.txt
+	
+	debug_tee.sh
+
+	cw
+	stworz f. assert like:
+	assert "warunek" $LINENO
+	skrypt zawierajacy f. assert
+		+ set -x aby sledzic wykonywanie
+		+ przy pomocy zmiennej BASH_XTRACEFD przekieruje komunikaty sledzenia do pliku
+		+ wykorzysta pulapke DEBUG
+
+	assert.sh - prosta asercja z debugiem do pliku
+	
+	
+	

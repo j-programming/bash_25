@@ -1,0 +1,4 @@
++ eval '[ aa = bb ]'
+++ '[' aa = bb ']'
++ echo False, assertion faild in line 13
++ exit 1
