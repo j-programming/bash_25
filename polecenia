@@ -497,6 +497,131 @@ rozwiniecia parametryczne
 	c - echo *[ab]*/ 
 	d - echo *[ab]*[ab]*/ - nie bo aa bb
 	d - echo *a*b*/ *b*a*/
+		lub uzywajac listy wzorcow
+	 - echo *+(a|b)* *a* *b*
+
+	+(a|b)* == a*b*
+	*?(a)* == moze ale nie musi byc a w napisie
+
+	listy wzorcow, przyklady.
+
+	cw:
+	a - echo *!(a)*.jpg == echo +(^a)*.jpg
+	b - echo !(*.bmp|*.sh) - nie *!() - null na koncu nazwy
+	
+			PRZETWARZANIE TEKSTU
+
+	expand/unexpand - zamienia spacje na tabulatory i odwrotnie
+
+	tr - podmien lub skasuj okreslone znaki
+
+	paste - laczy wiele lini w jedna
+	
+	sort - sortowanie
+
+	uniq - pomin zduplikowane linie, ktore do siebie przylegaja
+	
+	sort:
+	a) ps -A --no-heading -o rss | paste -sd '+' | bc
+	b) ps aux | sort -nk6  - prawie
+	
+	
+			REG-EXP
+	
+	zazwyczaj slaba dokumentacja
+	moga byc trudne do czytania
+	
+	jex.im/regulex  <-- wizualizacja
+
+	grep - przeszukiwanie plikow tekstowych
+	
+	echo abc | grep ab -znajduje
+	
+	podstawowe vs rozszerzane regexp:
+	bez przelacznika -E meta-znaki ?,+,{,|,(,) nie posiadaja specjalnego znaczenia
+	trzeba je poprzedzic znakiem \ (backslash)
+	
+	poczatek i koniec dopasowywanego wiersza:
+	^ poczatek
+	$ koniec linii
+	
+	echo abc | grep ^a - linia zaczynajaca sie na a
+	echo abc | grep a$ - linia konczaca sie na a
+
+	egrep = grep -E
+	
+	-klasy znakow
+	[]
+	[0-9] [a-z]	
 
 	
+	echo "<h7" | egrep "<[Hh][1-7]>"
+
 	
+	. - dowolny znak
+	przyklad dla daty: 11-01-01, 11/01/01, 11.01.01, 11,01,01
+	11[-./]01[-./]01
+
+	alternacja: laczenie wielu klas
+
+	echo "Echo" | egrep 'echo|Echo'
+
+	() - ograniczaja zasieg alternacji
+
+	echo "echo" | egrep '(e|E|C)cho'
+	[Aa]leje Jana Pawla (2|II)
+	[Uu]lica (Trzecie|3-)go Maja
+
+	granice slow:
+	\< poczatek slowa
+	\> koniec slowa
+
+	przyklad dla "Ten tego tamt-ego"
+	\<tego\>
+	\<tamt\>
+	\<50\>
+	\<(tego|ego)\>
+
+	elementy opcjonalne:
+	? - umieszczamy po znaku, ktory moze, ale nie musi wystapic - zero lub jeden
+	np. ro?uter r(oa)?uter - ruter lub roauter! - dot nawiasu
+	
+	* - zero lub wiecej (dot poprzedniego elementu)
+	+ - jeden lub wiecej znakow
+
+	Minimalna i maksymalna liczba wystapien (kwantyfikator przedzialu)
+	{min,max}
+	{0,1} jednoznaczne ze znakiem zapytania == ?
+	echo "abbc" | egrep 'a(ab)....
+	
+	odwolania wsteczne
+	- ograniczaja zasieg alternatywy |
+	np. wyszukanie podwojonych slow w "dwa razy razy"
+	\<razy +razy\>
+	\<([A-Za-z]+) +\1 \> nawias kw jeden raz lub wiecej,
+		+\1 - musi sie znajdowac w dalszej czesci co najmniej jeden raz
+	echo "dwa razy razy razy dwa" | egrep '\<([A-Za-z]+) +\1\>'
+
+	zachlannosc kwantyfikatorow
+	polega na tym, ze zawsze staraja sie dopasowac najwieksza
+
+
+	sed - zaawansowany grep?
+	echo echo | sed '/e(c|h)o/ p' --> echo
+
+	echo echo | sed -n '/s.*\(ch\).*/\1/p' --> ch zamiast / mozna #
+
+	"data 2010"
+	echo "data 2010" | sed 's/[0-9]\+//'
+	echo "data 2010" | sed 's/\(.*\)\(.*\)/\1:\2/'
+
+	"<tag>tekst</tag><tag>opis</tag>
+
+	wyluskac "komunikat" z:
+	[2017-01-01] komunikat XX
+
+	echo "[2017-01-01] komunikat XX" | sed -n 's/\[[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\] *//p'
+	^ komunikat XX
+
+	echo "[2017-01-01] komunikat XX" | sed -n 's#^[^ ]\+ \+\(.*\) XX.*#\1#p'
+	^komunikat
